@@ -1,0 +1,63 @@
+﻿@model IEnumerable<ilac_etkilesimleri.Data.Ilac>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Ad)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Aciklama)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.YanEtkiler)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.NasilKullanilir)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.DikkatEdilecekler)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.EtkenMaddeler)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.Ad)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Aciklama)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.YanEtkiler)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.NasilKullanilir)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.DikkatEdilecekler)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.EtkenMaddeler)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id=item.Id }) |
+            @Html.ActionLink("Details", "Details", new { id=item.Id }) |
+            @Html.ActionLink("Delete", "Delete", new { id=item.Id })
+        </td>
+    </tr>
+}
+
+</table>
