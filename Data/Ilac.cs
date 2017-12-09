@@ -14,6 +14,5 @@ namespace ilac_etkilesimleri.Data
         public string NasilKullanilir { get; set; }
         public string DikkatEdilecekler { get; set; }
         public string EtkenMaddeler { get; set; }
-        public virtual List<EtkenMadde> EtkenMaddeListe { get; set; }
     }
 }

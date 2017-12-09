@@ -6,8 +6,8 @@ namespace ilac_etkilesimleri
 {
     public class TingoonDbContext : EFContextSettings ,ITingoonDbContext
     {
-        public DbSet<Ilac> IlacModels { get; set; }
-        public DbSet<EtkenMadde> EtkenMaddeModels { get; set; }
+        public DbSet<Ilac> Ilac { get; set; }
+        public DbSet<EtkenMadde> EtkenMadde { get; set; }
 
     }
 }

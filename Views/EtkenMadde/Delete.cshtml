@@ -1,4 +1,4 @@
-﻿@model ilac_etkilesimleri.Data.EtkenMadde
+﻿@model ilac_etkilesimleri.Models.EtkenMaddeViewModels
 
 @{
     ViewBag.Title = "Delete";
@@ -28,16 +28,27 @@
         </dd>
 
         <dt>
-            @Html.DisplayNameFor(model => model.BeraberKullanilmayacaklar)
+            @Html.DisplayNameFor(model => model.EtkilesenEtkenMaddelerId)
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.BeraberKullanilmayacaklar)
+            @if (Model.EtkilesenEtkenMaddelerText != null)
+            {
+                <ul>
+                    @foreach (var item in Model.EtkilesenEtkenMaddelerText)
+                    {
+                        <li>
+                            @item
+                        </li>
+                    }
+                </ul>
+            }
         </dd>
 
     </dl>
 
-    @using (Html.BeginForm()) {
+    @using (Html.BeginForm())
+    {
         @Html.AntiForgeryToken()
 
         <div class="form-actions no-color">

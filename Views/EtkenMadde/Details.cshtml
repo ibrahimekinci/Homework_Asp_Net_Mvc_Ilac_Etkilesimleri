@@ -1,4 +1,4 @@
-﻿@model ilac_etkilesimleri.Data.EtkenMadde
+﻿@model ilac_etkilesimleri.Models.EtkenMaddeViewModels
 
 @{
     ViewBag.Title = "Details";
@@ -27,13 +27,23 @@
         </dd>
 
         <dt>
-            @Html.DisplayNameFor(model => model.BeraberKullanilmayacaklar)
+            @Html.DisplayNameFor(model => model.EtkilesenEtkenMaddelerText)
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.BeraberKullanilmayacaklar)
-        </dd>
+            @if (Model.EtkilesenEtkenMaddelerText != null)
+            {
+                <ul>
+                    @foreach (var item in Model.EtkilesenEtkenMaddelerText)
+                    {
+                        <li>
+                            @item
+                        </li>
+                    }
+                </ul>
+            }
 
+        </dd>
     </dl>
 </div>
 <p>

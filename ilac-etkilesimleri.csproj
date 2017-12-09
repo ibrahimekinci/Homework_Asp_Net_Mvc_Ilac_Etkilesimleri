@@ -25,6 +25,7 @@
     <UseGlobalApplicationHostFile />
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <Use64BitIISExpress />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -213,8 +214,12 @@
     <Compile Include="Data\Cammon\IEntity.cs" />
     <Compile Include="Data\example\Country.cs" />
     <Compile Include="Data\EtkenMadde.cs" />
+    <Compile Include="Models\EtkenMaddeViewModels.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Data\Ilac.cs" />
+    <Compile Include="Models\IlacEtkilesimViewModels.cs" />
+    <Compile Include="Models\IndexListViewModels.cs" />
+    <Compile Include="Models\IlacViewModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Data\example\Person.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

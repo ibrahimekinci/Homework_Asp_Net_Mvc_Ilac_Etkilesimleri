@@ -10,7 +10,6 @@ namespace ilac_etkilesimleri.Data
     {
         public string Ad { get; set; }
         public string Aciklama { get; set; }
-        public string BeraberKullanilmayacaklar { get; set; }
-        public virtual List<Ilac> IlacListe { get; set; }
+        public string EtkilesenEtkenMaddeler { get; set; }
     }
 }
