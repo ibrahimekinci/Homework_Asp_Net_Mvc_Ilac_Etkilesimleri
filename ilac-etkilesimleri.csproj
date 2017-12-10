@@ -218,6 +218,7 @@
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Data\Ilac.cs" />
     <Compile Include="Models\IlacEtkilesimViewModels.cs" />
+    <Compile Include="Models\IlacIndexViewModels.cs" />
     <Compile Include="Models\IndexListViewModels.cs" />
     <Compile Include="Models\IlacViewModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />

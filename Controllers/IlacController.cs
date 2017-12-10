@@ -20,7 +20,7 @@ namespace ilac_etkilesimleri.Controllers
         // GET: Ilac
         public async Task<ActionResult> Index()
         {
-            return View(await db.Ilac.Select(x => new IndexListViewModels { Id = x.Id, Ad = x.Ad }).ToListAsync());
+            return View(await db.Ilac.Select(x => new IlacIndexViewModels { Id = x.Id, Ad = x.Ad, AnalizYapildiMi = x.AnalizYapildiMi }).ToListAsync());
         }
         // GET: Ilac/Details/5
         public async Task<ActionResult> Details(int? id)
@@ -39,6 +39,9 @@ namespace ilac_etkilesimleri.Controllers
                 Id = m.Id,
                 Ad = m.Ad,
                 Aciklama = m.Aciklama,
+                YanEtkiler = m.YanEtkiler,
+                NasilKullanilir = m.NasilKullanilir,
+                DikkatEdilecekler = m.DikkatEdilecekler,
                 EtkenMaddelerId = m.EtkenMaddeler == null ? null : m.EtkenMaddeler.Split('-')
             };
             if (vm.EtkenMaddelerId != null)
@@ -108,9 +111,10 @@ namespace ilac_etkilesimleri.Controllers
                 YanEtkiler = m.YanEtkiler,
                 NasilKullanilir = m.NasilKullanilir,
                 DikkatEdilecekler = m.DikkatEdilecekler,
+                EtkenMaddelerId = m.EtkenMaddeler == null ? null : m.EtkenMaddeler.Split('-'),
                 EtkenMaddeler = db.EtkenMadde.Select(x => new SelectListItem { Value = x.Id.ToString(), Text = x.Ad }).ToList()
             };
-            return View(m);
+            return View(vm);
         }
 
         // POST: Ilac/Edit/5
@@ -118,15 +122,25 @@ namespace ilac_etkilesimleri.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit([Bind(Include = "Id,Ad,Aciklama,YanEtkiler,NasilKullanilir,DikkatEdilecekler,EtkenMaddeler")] Ilac ilac)
+        public async Task<ActionResult> Edit([Bind(Include = "Id,Ad,Aciklama,YanEtkiler,NasilKullanilir,DikkatEdilecekler,EtkenMaddelerId")] IlacViewModels vm)
         {
             if (ModelState.IsValid)
             {
-                db.Entry(ilac).State = EntityState.Modified;
+                var m = new Ilac
+                {
+                    Id = vm.Id,
+                    Ad = vm.Ad,
+                    Aciklama = vm.Aciklama,
+                    YanEtkiler = vm.YanEtkiler,
+                    NasilKullanilir = vm.NasilKullanilir,
+                    DikkatEdilecekler = vm.DikkatEdilecekler,
+                    EtkenMaddeler = vm.EtkenMaddelerId == null ? null : string.Join("-", vm.EtkenMaddelerId)
+                };
+                db.Entry(m).State = EntityState.Modified;
                 await db.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
-            return View(ilac);
+            return View(vm);
         }
 
         // GET: Ilac/Delete/5
@@ -136,12 +150,31 @@ namespace ilac_etkilesimleri.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Ilac ilac = await db.Ilac.FindAsync(id);
-            if (ilac == null)
+            Ilac m = await db.Ilac.FindAsync(id);
+            if (m == null)
             {
                 return HttpNotFound();
             }
-            return View(ilac);
+            var vm = new IlacViewModels
+            {
+                Id = m.Id,
+                Ad = m.Ad,
+                Aciklama = m.Aciklama,
+                YanEtkiler = m.YanEtkiler,
+                NasilKullanilir = m.NasilKullanilir,
+                DikkatEdilecekler = m.DikkatEdilecekler,
+                EtkenMaddelerId = m.EtkenMaddeler == null ? null : m.EtkenMaddeler.Split('-')
+            };
+            if (vm.EtkenMaddelerId != null)
+            {
+                List<int> EtkilesenEtkenMaddelerId = new List<int>();
+                foreach (var item in vm.EtkenMaddelerId)
+                {
+                    EtkilesenEtkenMaddelerId.Add(Convert.ToInt32(item));
+                }
+                vm.EtkenMaddelerText = m.EtkenMaddeler == null ? null : db.EtkenMadde.Where(x => EtkilesenEtkenMaddelerId.Contains(x.Id)).Select(x => x.Ad).ToList();
+            }
+            return View(vm);
         }
 
         // POST: Ilac/Delete/5

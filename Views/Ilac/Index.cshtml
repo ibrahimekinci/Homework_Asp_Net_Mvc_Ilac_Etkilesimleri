@@ -1,4 +1,4 @@
-﻿@model IEnumerable<ilac_etkilesimleri.Models.IndexListViewModels>
+﻿@model IEnumerable<ilac_etkilesimleri.Models.IlacIndexViewModels>
 
 @{
     ViewBag.Title = "Index";
@@ -11,25 +11,45 @@
 </p>
 <table class="table">
     <tr class="col-md-10">
-        <th class="col-md-8">
+        <th class="col-md-5">
             @Html.DisplayNameFor(model => model.Ad)
         </th>
-        <th class="col-md-2">
+        <th class="col-md-1">
+            @Html.DisplayNameFor(model => model.AnalizYapildiMi)
+        </th>
+        <th class="col-md-4">
             @Html.DisplayName("İşlemler")
         </th>
     </tr>
     @foreach (var item in Model)
     {
         <tr class="col-md-10">
-            <td class="col-md-8">
+            <td class="col-md-5">
                 @Html.DisplayFor(modelItem => item.Ad)
             </td>
-            <td class="col-md-2">
-                @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
-                @Html.ActionLink("Details", "Details", new { id = item.Id }) |
-                @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+            <td class="col-md-1">
+                @if (@item.AnalizYapildiMi)
+                {
+                    <p style="color:green;"><b>Analiz yapıldı</b></p>
+                }
+                else
+                {
+                    <p style="color:red;"><b>Analiz yapılmadı</b></p>
+                }
+            </td>
+            <td class="col-md-4">
+                <div class="col-md-12">
+                    <div class="col-md-3">@Html.ActionLink("Edit", "Edit", new { id = item.Id })</div>
+                    <div class="col-md-3">@Html.ActionLink("Details", "Details", new { id = item.Id }) </div>
+                    <div class="col-md-3">@Html.ActionLink("Delete", "Delete", new { id = item.Id })</div>
+                    @if (!item.AnalizYapildiMi)
+                    {
+                        <div class="col-md-3"> @Html.ActionLink("Analiz Yap", "Index", "IlacEtkilesim", new { id = item.Id })</div>
+                    }
+                </div>
             </td>
         </tr>
     }
+
 
 </table>
