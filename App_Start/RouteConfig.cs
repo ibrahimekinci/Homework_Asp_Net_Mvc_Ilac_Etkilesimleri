@@ -13,6 +13,16 @@ namespace ilac_etkilesimleri
         {
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
+            #region ibrahiekinci.Plugin.Localization
+                        routes.MapRoute(
+                   name: "DefaultLocalized",
+                   url: "{lang}/{controller}/{action}/{id}",
+                     constraints: new { lang = @"(TR)|(EN)|(IT)" },
+                   //constraints: new { lang = @"(\w{2})|(\w{2}-\w{2})" },   // en or en-US
+                   defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional }
+               );
+            #endregion
+
             routes.MapRoute(
                 name: "Default",
                 url: "{controller}/{action}/{id}",

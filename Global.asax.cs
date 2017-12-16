@@ -16,6 +16,7 @@ namespace ilac_etkilesimleri
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
+            ControllerBuilder.Current.SetControllerFactory(new DefaultControllerFactory(new ilac_etkilesimleri.Plugin.Localization.LocalizedActivator("tr")));//çoklu dil
         }
     }
 }

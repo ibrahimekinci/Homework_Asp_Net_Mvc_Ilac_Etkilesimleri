@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<parameters>
+  <parameter name="DefaultConnection-Web.config Connection String" description="DefaultConnection Connection String used in web.config by the application to access the database." defaultValue="Data Source=(LocalDb)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\ilac_etkilesimleri.mdf;Initial Catalog=ilac_etkilesimleri;Integrated Security=True" tags="SqlConnectionString">
+    <parameterEntry kind="XmlFile" scope="C:\\_Project\\ilac-etkilesimleri\\web\\ilac-etkilesimleri\\obj\\Release\\Package\\PackageTmp\\Web\.config$" match="/configuration/connectionStrings/add[@name='DefaultConnection']/@connectionString" />
+  </parameter>
+  <parameter name="FileMdfConnection-Web.config Connection String" description="FileMdfConnection Connection String used in web.config by the application to access the database." defaultValue="Data Source=(LocalDb)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\ilac_etkilesimleri.mdf;Initial Catalog=ilac_etkilesimleri;Integrated Security=True" tags="SqlConnectionString">
+    <parameterEntry kind="XmlFile" scope="C:\\_Project\\ilac-etkilesimleri\\web\\ilac-etkilesimleri\\obj\\Release\\Package\\PackageTmp\\Web\.config$" match="/configuration/connectionStrings/add[@name='FileMdfConnection']/@connectionString" />
+  </parameter>
+  <parameter name="FileSdfConnection-Web.config Connection String" description="FileSdfConnection Connection String used in web.config by the application to access the database." defaultValue="Data Source=|DataDirectory|\ilac_etkilesimleri.sdf" tags="SqlConnectionString">
+    <parameterEntry kind="XmlFile" scope="C:\\_Project\\ilac-etkilesimleri\\web\\ilac-etkilesimleri\\obj\\Release\\Package\\PackageTmp\\Web\.config$" match="/configuration/connectionStrings/add[@name='FileSdfConnection']/@connectionString" />
+  </parameter>
+  <parameter name="LocalMssqlConnection-Web.config Connection String" description="LocalMssqlConnection Connection String used in web.config by the application to access the database." defaultValue="Data Source=DESKTOP-A6S728R;Initial Catalog=ilac_etkilesimleri;User ID=sa;Password=123456" tags="SqlConnectionString">
+    <parameterEntry kind="XmlFile" scope="C:\\_Project\\ilac-etkilesimleri\\web\\ilac-etkilesimleri\\obj\\Release\\Package\\PackageTmp\\Web\.config$" match="/configuration/connectionStrings/add[@name='LocalMssqlConnection']/@connectionString" />
+  </parameter>
+  <parameter name="AzureMssqlConnection1-Web.config Connection String" description="AzureMssqlConnection1 Connection String used in web.config by the application to access the database." defaultValue="Server=tcp:ibrahimekinciazuredbmsqlserver.database.windows.net,1433;Initial Catalog=ibrahimekinciAzureDbMsql;Persist Security Info=False;User ID=ibrahimekinci36;Password=.Standart1;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;" tags="SqlConnectionString">
+    <parameterEntry kind="XmlFile" scope="C:\\_Project\\ilac-etkilesimleri\\web\\ilac-etkilesimleri\\obj\\Release\\Package\\PackageTmp\\Web\.config$" match="/configuration/connectionStrings/add[@name='AzureMssqlConnection1']/@connectionString" />
+  </parameter>
+  <parameter name="AzureMssqlConnection-Web.config Connection String" description="AzureMssqlConnection Connection String used in web.config by the application to access the database." defaultValue="Server=tcp:ibrahimekinciazuredbmssq.database.windows.net,1433;Initial Catalog=ibrahimekinciazuredbmssql;Persist Security Info=False;User ID=ibrahimekinci36;Password=.Standart1;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;" tags="SqlConnectionString">
+    <parameterEntry kind="XmlFile" scope="C:\\_Project\\ilac-etkilesimleri\\web\\ilac-etkilesimleri\\obj\\Release\\Package\\PackageTmp\\Web\.config$" match="/configuration/connectionStrings/add[@name='AzureMssqlConnection']/@connectionString" />
+  </parameter>
+  <parameter name="AzureMysqlConnection-Web.config Connection String" description="AzureMysqlConnection Connection String used in web.config by the application to access the database." defaultValue="Database=acsm_cf85d2b5eab6b43;Data Source=br-cdbr-azure-south-b.cloudapp.net;User Id=b3b5381ee04911;Password=1eac234c" tags="SqlConnectionString">
+    <parameterEntry kind="XmlFile" scope="C:\\_Project\\ilac-etkilesimleri\\web\\ilac-etkilesimleri\\obj\\Release\\Package\\PackageTmp\\Web\.config$" match="/configuration/connectionStrings/add[@name='AzureMysqlConnection']/@connectionString" />
+  </parameter>
+</parameters>

@@ -1,0 +1,50 @@
+﻿@*<!-- DataTables -->
+    <link rel="stylesheet" href="~/Assets/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css">
+
+    <!-- DataTables -->
+    <script src="~/Assets/bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
+    <script src="~/Assets/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+
+    <script>
+        $(function () {
+            $('#example1').DataTable()
+            $('#example2').DataTable({
+                'paging': true,
+                'lengthChange': false,
+                'searching': false,
+                'ordering': true,
+                'info': true,
+                'autoWidth': false
+            })
+        })
+    </script>*@
+
+<div class="box">
+    <div class="box-header">
+        <h3 class="box-title">Data Table With Full Features</h3>
+    </div>
+    <!-- /.box-header -->
+    <div class="box-body">
+        <table id="example1" class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    @*Değiştirlecek*@
+                    <th>Rendering engine</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    @*Değiştirlecek*@
+                    <td>Trident</td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    @*Değiştirlecek*@
+                    <th>Rendering engine</th>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+    <!-- /.box-body -->
+</div>

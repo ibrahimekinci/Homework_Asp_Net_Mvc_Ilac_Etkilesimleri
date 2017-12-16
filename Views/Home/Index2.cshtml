@@ -1,0 +1,82 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+@*@section head{
+
+    }
+    @section scripts{
+
+    }*@
+
+@section head{
+    <!-- Select2 -->
+    <link rel="stylesheet" href="~/Assets/bower_components/select2/dist/css/select2.min.css">
+    <!-- bootstrap wysihtml5 - text editor -->
+    <link rel="stylesheet" href="~/Assets/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css">
+    <!-- DataTables -->
+    <link rel="stylesheet" href="~/Assets/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css">
+
+}
+@section scripts{
+    <!-- Select2 -->
+    <script src="~/Assets/bower_components/select2/dist/js/select2.full.min.js"></script>
+    <script>
+        $(function () {
+            //Initialize Select2 Elements
+            $('.select2').select2()
+        })
+    </script>
+    <!-- Bootstrap WYSIHTML5 -->
+    <script src="~/Assets/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.all.min.js"></script>
+    <script>
+        $(function () {
+            //bootstrap WYSIHTML5 - text editor
+
+            //$('.textarea').wysihtml5()
+
+            $("#deneme").wysihtml5();
+            $('.textarea').data("wysihtml5").editor.setValue('<p>Som html goes here</p>');
+
+            //bootstrap WYSIHTML5 - text editor
+            $('.textarea').wysihtml5()
+        })
+
+    </script>
+    <!-- CK Editor -->
+    <script src="~/Assets/bower_components/ckeditor/ckeditor.js"></script>
+    <script>
+        $(function () {
+            // Replace the <textarea id="editor1"> with a CKEditor
+            // instance, using default configuration.
+            CKEDITOR.replace('editor1')
+
+        })
+    </script>
+    <!-- DataTables -->
+    <script src="~/Assets/bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
+    <script src="~/Assets/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+
+    <script>
+        $(function () {
+            $('#example1').DataTable()
+            $('#example2').DataTable({
+                'paging': true,
+                'lengthChange': false,
+                'searching': false,
+                'ordering': true,
+                'info': true,
+                'autoWidth': false
+            })
+        })
+    </script>
+
+}
+@Html.Partial("/Views/Shared/pages/examples/blank.cshtml")
+@Html.Partial("~/Views/Shared/pages/forms/advanced/_Select2_Multiple.cshtml")
+@Html.Partial("~/Views/Shared/pages/forms/editors/_BootstrapWYSIHTML5.cshtml")
+@Html.Partial("~/Views/Shared/pages/forms/editors/_CKEditor.cshtml")
+@Html.Partial("~/Views/Shared/pages/tables/data/_DataTableWithFullFeatures.cshtml")
+@Html.Partial("~/Views/Shared/pages/UI/genaral/_Alert_Danger.cshtml")
+@Html.Partial("~/Views/Shared/pages/UI/modals/ModalExamples_Default.cshtml")
+@Html.Partial("~/Views/Shared/pages/widgets/_Expandable.cshtml")

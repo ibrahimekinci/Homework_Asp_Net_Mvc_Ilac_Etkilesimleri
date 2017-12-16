@@ -20,7 +20,7 @@ namespace ilac_etkilesimleri.Controllers
         // GET: EtkenMadde
         public async Task<ActionResult> Index()
         {
-            return View(await db.EtkenMadde.Select(x => new IndexListViewModels { Id = x.Id, Ad = x.Ad }).ToListAsync());
+            return View(await db.EtkenMadde.Select(x => new EtkenMaddeListViewModel { Id = x.Id, Ad = x.Ad }).ToListAsync());
         }
 
         // GET: EtkenMadde/Details/5
@@ -35,35 +35,31 @@ namespace ilac_etkilesimleri.Controllers
             {
                 return HttpNotFound();
             }
-            var vm = new EtkenMaddeViewModels
+            var vm = new EtkenMaddeViewModel
             {
                 Id = m.Id,
                 Ad = m.Ad,
-                Aciklama = m.Aciklama,
-                EtkilesenEtkenMaddelerId = m.EtkilesenEtkenMaddeler == null ? null : m.EtkilesenEtkenMaddeler.Split('-')
+                Aciklama = m.Aciklama
             };
-
-            if (vm.EtkilesenEtkenMaddelerId != null)
+            var temp = await db.EtkenMaddeEtkilesim.Where(x => x.EtkenMaddeId1 == id || x.EtkenMaddeId2 == id).ToListAsync();
+            if (temp != null)
             {
-                List<int> EtkilesenEtkenMaddelerId = new List<int>();
-                foreach (var item in vm.EtkilesenEtkenMaddelerId)
+                foreach (var item in temp)
                 {
-                    EtkilesenEtkenMaddelerId.Add(Convert.ToInt32(item));
+                    if (item.EtkenMaddeId1 == id)
+                        vm.EtkilesenEtkenMaddeler.Add(item.EtkenMadde2);
+                    else if (item.EtkenMaddeId2 == id)
+                        vm.EtkilesenEtkenMaddeler.Add(item.EtkenMadde1);
                 }
-                vm.EtkilesenEtkenMaddelerText = m.EtkilesenEtkenMaddeler == null ? null : db.EtkenMadde.Where(x => EtkilesenEtkenMaddelerId.Contains(x.Id)).Select(x => x.Ad).ToList();
             }
-
             return View(vm);
         }
 
         // GET: EtkenMadde/Create
-        public ActionResult Create()
+        public async Task<ActionResult> Create(int? id)
         {
-            var vm = new EtkenMaddeViewModels
-            {
-                EtkenMaddeler = db.EtkenMadde.Select(x => new SelectListItem { Value = x.Id.ToString(), Text = x.Ad }).ToList()
-            };
-            return View(vm);
+            ViewBag.EtkenMaddeListe = await db.EtkenMadde.Select(x => new SelectListItem { Text = x.Ad, Value = x.Id.ToString() }).ToListAsync();
+            return View();
         }
 
         // POST: EtkenMadde/Create
@@ -71,32 +67,30 @@ namespace ilac_etkilesimleri.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create([Bind(Include = "Id,Ad,Aciklama,EtkilesenEtkenMaddelerId")] EtkenMaddeViewModels vm)
+        public async Task<ActionResult> Create([Bind(Include = "Id,Ad,Aciklama,EtkilesenEtkenMaddelerId")] EtkenMaddeViewModel vm)
         {
             if (!ModelState.IsValid)
+            {
+                ViewBag.EtkenMaddeListe = await db.EtkenMadde.Select(x => new SelectListItem { Text = x.Ad, Value = x.Id.ToString() }).ToListAsync();
                 return View(vm);
+            }
+            if (db.EtkenMadde.Where(x => x.Ad == vm.Ad.ToLower()).Count() > 0)
+            {
+                ModelState.AddModelError("Ad", "Bu isimde bir etken madde zaten var.");
+                ViewBag.EtkenMaddeListe = await db.EtkenMadde.Select(x => new SelectListItem { Text = x.Ad, Value = x.Id.ToString() }).ToListAsync();
+                return View(vm);
+            }
             var m = new EtkenMadde
             {
-                Ad = vm.Ad,
+                Ad = vm.Ad.ToLower(),
                 Aciklama = vm.Aciklama,
-                EtkilesenEtkenMaddeler = vm.EtkilesenEtkenMaddelerId == null ? null : string.Join("-", vm.EtkilesenEtkenMaddelerId)
             };
             db.EtkenMadde.Add(m);
             await db.SaveChangesAsync();
-
-            if (vm.EtkilesenEtkenMaddelerId != null)
+            if (vm.EtkilesenEtkenMaddelerId != null && vm.EtkilesenEtkenMaddelerId.Count() > 0)
             {
-                foreach (var etkilesenEtkenMaddeId in vm.EtkilesenEtkenMaddelerId)
-                {
-                    var tempEtkenMadde = await db.EtkenMadde.FindAsync(Convert.ToInt32(etkilesenEtkenMaddeId));
-                    if (tempEtkenMadde == null)
-                        continue;
-                    if (tempEtkenMadde.EtkilesenEtkenMaddeler == null)
-                        tempEtkenMadde.EtkilesenEtkenMaddeler = m.Id.ToString();
-                    else
-                        tempEtkenMadde.EtkilesenEtkenMaddeler = tempEtkenMadde.EtkilesenEtkenMaddeler + "-" + m.Id.ToString();
-                    db.Entry(m).State = EntityState.Modified;
-                }
+                foreach (var item in vm.EtkilesenEtkenMaddelerId)
+                    db.EtkenMaddeEtkilesim.Add(new EtkenMaddeEtkilesim { EtkenMaddeId1 = m.Id, EtkenMaddeId2 = item });
                 await db.SaveChangesAsync();
             }
             return RedirectToAction("Index");
@@ -114,14 +108,35 @@ namespace ilac_etkilesimleri.Controllers
             {
                 return HttpNotFound();
             }
-            var vm = new EtkenMaddeViewModels
+            var vm = new EtkenMaddeViewModel
             {
                 Id = m.Id,
                 Ad = m.Ad,
-                Aciklama = m.Aciklama,
-                EtkilesenEtkenMaddelerId = m.EtkilesenEtkenMaddeler == null ? null : m.EtkilesenEtkenMaddeler.Split('-'),
-                EtkenMaddeler = db.EtkenMadde.Where(x => x.Id != m.Id).Select(x => new SelectListItem { Value = x.Id.ToString(), Text = x.Ad }).ToList(),
+                Aciklama = m.Aciklama
             };
+            var temp = await db.EtkenMaddeEtkilesim.Where(x => x.EtkenMaddeId1 == id || x.EtkenMaddeId2 == id).ToListAsync();
+            if (temp != null)
+            {
+                foreach (var item in temp)
+                {
+                    if (item.EtkenMaddeId1 == id)
+                        vm.EtkilesenEtkenMaddeler.Add(item.EtkenMadde2);
+                    else if (item.EtkenMaddeId2 == id)
+                        vm.EtkilesenEtkenMaddeler.Add(item.EtkenMadde1);
+                }
+            }
+            foreach (var item in temp)
+            {
+                if (item.EtkenMaddeId1 == vm.Id)
+                    vm.EtkilesenEtkenMaddelerId.Add(item.EtkenMaddeId2);
+                else if (item.EtkenMaddeId2 == vm.Id)
+                    vm.EtkilesenEtkenMaddelerId.Add(item.EtkenMaddeId1);
+            }
+            IEnumerable<SelectListItem> items = new MultiSelectList(db.EtkenMadde.Select(x => new SelectListItem { Text = x.Ad, Value = x.Id.ToString() }), "Value", "Text", vm.EtkilesenEtkenMaddelerId);
+            ViewBag.EtkenMaddeListe = items;
+            //ViewBag.EtkenMaddeListe = new MultiSelectList(db.EtkenMadde.Select(x => new SelectListItem { Text = x.Ad, Value = x.Id.ToString() }), "Value", "Text", vm.EtkilesenEtkenMaddelerId);
+
+
             return View(vm);
         }
 
@@ -130,91 +145,69 @@ namespace ilac_etkilesimleri.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit([Bind(Include = "Id,Ad,Aciklama,EtkilesenEtkenMaddelerId")] EtkenMaddeViewModels vm)
+        public async Task<ActionResult> Edit([Bind(Include = "Id,Ad,Aciklama,EtkilesenEtkenMaddelerId")] EtkenMaddeViewModel vm)
         {
             if (!ModelState.IsValid)
+            {
+                ViewBag.EtkenMaddeListe = new MultiSelectList(db.EtkenMadde.Select(x => new SelectListItem { Text = x.Ad, Value = x.Id.ToString() }), "Value", "Text", vm.EtkilesenEtkenMaddelerId);
                 return View(vm);
-
+            }
             EtkenMadde m = await db.EtkenMadde.FindAsync(vm.Id);
-            m.Ad = vm.Ad;
-            m.Aciklama = vm.Aciklama;
             if (m == null)
             {
                 return HttpNotFound();
             }
-            //var YeniM = new EtkenMadde
-            //{
-            //    Id = vm.Id,
-            //    Ad = vm.Ad,
-            //    Aciklama = vm.Aciklama,
-            //    EtkilesenEtkenMaddeler = vm.EtkilesenEtkenMaddelerId == null ? null : string.Join("-", vm.EtkilesenEtkenMaddelerId)
-            //};
-            if (m.EtkilesenEtkenMaddeler == string.Join("-", vm.EtkilesenEtkenMaddelerId))
+            if (db.EtkenMadde.Where(x => x.Ad == vm.Ad.ToLower() && x.Id != vm.Id).Count() > 0)
             {
-                db.Entry(m).State = EntityState.Modified;
-                await db.SaveChangesAsync();
-                return RedirectToAction("Index");
+                ModelState.AddModelError("Ad", "Bu isimde bir etken madde zaten var.");
+                ViewBag.EtkenMaddeListe = new MultiSelectList(db.EtkenMadde.Select(x => new SelectListItem { Text = x.Ad, Value = x.Id.ToString() }), "Value", "Text", vm.EtkilesenEtkenMaddelerId);
+                return View(vm);
             }
+            m.Ad = vm.Ad;
+            m.Aciklama = vm.Aciklama;
+            var eskiEtkilesenEtkenMaddeler = await db.EtkenMaddeEtkilesim.Where(x => x.EtkenMaddeId1 == m.Id || x.EtkenMaddeId2 == m.Id).ToListAsync();
 
-            var eskiEtkilesenEtkenMaddelerId = m.EtkilesenEtkenMaddeler == null ? null : m.EtkilesenEtkenMaddeler.Split('-');
-            if (eskiEtkilesenEtkenMaddelerId != null)
+            if (eskiEtkilesenEtkenMaddeler == null || eskiEtkilesenEtkenMaddeler.Count == 0)
             {
-                foreach (var item in eskiEtkilesenEtkenMaddelerId)
+                foreach (var item in vm.EtkilesenEtkenMaddelerId)
+                    db.EtkenMaddeEtkilesim.Add(new EtkenMaddeEtkilesim { EtkenMaddeId1 = m.Id, EtkenMaddeId2 = item });
+            }
+            else
+            {
+                if (vm.EtkilesenEtkenMaddelerId == null || vm.EtkilesenEtkenMaddelerId.Count() == 0)
                 {
-                    if (!vm.EtkilesenEtkenMaddelerId.Contains(item))
-                    {
-                        var tempEtkenMadde = await db.EtkenMadde.FindAsync(Convert.ToInt32(item));
-                        if (tempEtkenMadde != null)
-                        {
-                            var tempEtkenMaddeEtkilesenEtkenMaddelerId = tempEtkenMadde.EtkilesenEtkenMaddeler == null ? null : tempEtkenMadde.EtkilesenEtkenMaddeler.Split('-');
-                            tempEtkenMadde.EtkilesenEtkenMaddeler = null;
-                            foreach (var item2 in tempEtkenMaddeEtkilesenEtkenMaddelerId)
-                            {
-                                if (item2 != vm.Id.ToString())
-                                {
-                                    if (tempEtkenMadde.EtkilesenEtkenMaddeler == null)
-                                        tempEtkenMadde.EtkilesenEtkenMaddeler = item2;
-                                    else
-                                        tempEtkenMadde.EtkilesenEtkenMaddeler = tempEtkenMadde.EtkilesenEtkenMaddeler + "-" + item2;
-                                }
-                            }
-                            db.Entry(tempEtkenMadde).State = EntityState.Modified;
-                        }
-                    }
+                    db.EtkenMaddeEtkilesim.RemoveRange(eskiEtkilesenEtkenMaddeler);
                 }
-            }
-
-            if (vm.EtkilesenEtkenMaddelerId != null)
-            {
-                m.EtkilesenEtkenMaddeler = null;
-                foreach (var etkilesenEtkenMaddeId in vm.EtkilesenEtkenMaddelerId)
+                else
                 {
-                    var tempEtkenMadde = await db.EtkenMadde.FindAsync(Convert.ToInt32(etkilesenEtkenMaddeId));
-                    if (tempEtkenMadde != null)
+                    List<int> eskiEtkilesenEtkenMaddelerId = new List<int>();
+                    foreach (var item in eskiEtkilesenEtkenMaddeler)
                     {
-                        //üzerinde çalışılan nesneni etkileşilenler listesi güncelleniyor
-                        if (m.EtkilesenEtkenMaddeler == null)
-                            m.EtkilesenEtkenMaddeler = tempEtkenMadde.Id.ToString();
-                        else
-                            m.EtkilesenEtkenMaddeler = m.EtkilesenEtkenMaddeler + "-" + tempEtkenMadde.Id.ToString();
-
-                        if (eskiEtkilesenEtkenMaddelerId == null || !eskiEtkilesenEtkenMaddelerId.Contains(etkilesenEtkenMaddeId))
-                        {
-                            //Etkileşin etken maddelerin etkilenleri kısmına şuan değişiklik yapılan etken madde ıd si ekleniyor
-                            if (tempEtkenMadde.EtkilesenEtkenMaddeler == null)
-                                tempEtkenMadde.EtkilesenEtkenMaddeler = m.Id.ToString();
-                            else
-                                tempEtkenMadde.EtkilesenEtkenMaddeler = tempEtkenMadde.EtkilesenEtkenMaddeler + "-" + m.Id.ToString();
-                            db.Entry(tempEtkenMadde).State = EntityState.Modified;
-                        }
+                        if (item.EtkenMaddeId1 == vm.Id)
+                            eskiEtkilesenEtkenMaddelerId.Add(item.EtkenMaddeId2);
+                        else if (item.EtkenMaddeId2 == vm.Id)
+                            eskiEtkilesenEtkenMaddelerId.Add(item.EtkenMaddeId1);
                     }
-                }
-            }
 
+                    var yeniEtkilesenEtkenMaddeFark = vm.EtkilesenEtkenMaddelerId.Except(eskiEtkilesenEtkenMaddelerId);
+                    if (yeniEtkilesenEtkenMaddeFark != null && yeniEtkilesenEtkenMaddeFark.Count()>0)
+                    {
+                        foreach (var item in yeniEtkilesenEtkenMaddeFark)
+                            db.EtkenMaddeEtkilesim.Add(new EtkenMaddeEtkilesim { EtkenMaddeId1 = m.Id, EtkenMaddeId2 = item });
+                    }
+                    var eskiEtkilesenEtkenMaddeFark = eskiEtkilesenEtkenMaddelerId.Except(vm.EtkilesenEtkenMaddelerId);
+                    if (eskiEtkilesenEtkenMaddeFark != null && eskiEtkilesenEtkenMaddeFark.Count() > 0)
+                    {
+                        db.EtkenMaddeEtkilesim.RemoveRange(eskiEtkilesenEtkenMaddeler.Where(x => eskiEtkilesenEtkenMaddeFark.Contains(x.EtkenMaddeId1) || eskiEtkilesenEtkenMaddeFark.Contains(x.EtkenMaddeId2)));
+                    }
+
+                }
+
+            }
             db.Entry(m).State = EntityState.Modified;
+
             await db.SaveChangesAsync();
             return RedirectToAction("Index");
-
         }
 
         // GET: EtkenMadde/Delete/5
@@ -229,21 +222,22 @@ namespace ilac_etkilesimleri.Controllers
             {
                 return HttpNotFound();
             }
-            var vm = new EtkenMaddeViewModels
+            var vm = new EtkenMaddeViewModel
             {
                 Id = m.Id,
                 Ad = m.Ad,
-                Aciklama = m.Aciklama,
-                EtkilesenEtkenMaddelerId = m.EtkilesenEtkenMaddeler == null ? null : m.EtkilesenEtkenMaddeler.Split('-')
+                Aciklama = m.Aciklama
             };
-            List<int> EtkilesenEtkenMaddelerId = new List<int>();
-            if (vm.EtkilesenEtkenMaddelerId != null)
+            var temp = await db.EtkenMaddeEtkilesim.Where(x => x.EtkenMaddeId1 == id || x.EtkenMaddeId2 == id).ToListAsync();
+            if (temp != null)
             {
-                foreach (var item in vm.EtkilesenEtkenMaddelerId)
+                foreach (var item in temp)
                 {
-                    EtkilesenEtkenMaddelerId.Add(Convert.ToInt32(item));
+                    if (item.EtkenMaddeId1 == id)
+                        vm.EtkilesenEtkenMaddeler.Add(item.EtkenMadde2);
+                    else if (item.EtkenMaddeId2 == id)
+                        vm.EtkilesenEtkenMaddeler.Add(item.EtkenMadde1);
                 }
-                vm.EtkilesenEtkenMaddelerText = m.EtkilesenEtkenMaddeler == null ? null : db.EtkenMadde.Where(x => EtkilesenEtkenMaddelerId.Contains(x.Id)).Select(x => x.Ad).ToList();
             }
             return View(vm);
         }
@@ -254,6 +248,7 @@ namespace ilac_etkilesimleri.Controllers
         public async Task<ActionResult> DeleteConfirmed(int id)
         {
             EtkenMadde etkenMadde = await db.EtkenMadde.FindAsync(id);
+            db.EtkenMaddeEtkilesim.RemoveRange(db.EtkenMaddeEtkilesim.Where(x => x.EtkenMaddeId1 == id || x.EtkenMaddeId2 == id));
             db.EtkenMadde.Remove(etkenMadde);
             await db.SaveChangesAsync();
             return RedirectToAction("Index");

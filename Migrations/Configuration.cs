@@ -12,11 +12,13 @@ namespace ilac_etkilesimleri.Migrations
             //Enable - Migrations –EnableAutomaticMigrations
             //Update-Database -force
             AutomaticMigrationsEnabled = true;//Fasle iken true yapýldý.Sürekli migration ekleme iþini otomatik yapmak için 
-            AutomaticMigrationDataLossAllowed = false;
+            AutomaticMigrationDataLossAllowed = true;
         }
 
         protected override void Seed(ilac_etkilesimleri.TingoonDbContext context)
         {
+            //context.Database.Delete();
+            //context.Database.Create();
             //  This method will be called after migrating to the latest version.
 
             //  You can use the DbSet<T>.AddOrUpdate() helper extension method 

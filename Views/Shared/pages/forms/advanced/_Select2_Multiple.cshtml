@@ -1,0 +1,24 @@
+﻿@model SelectListItem
+@*<!-- Select2 -->
+    <link rel="stylesheet" href="~/Assets/bower_components/select2/dist/css/select2.min.css">
+    <!-- Select2 -->
+    <script src="~/Assets/bower_components/select2/dist/js/select2.full.min.js"></script>
+    <script>
+        $(function () {
+            //Initialize Select2 Elements
+            $('.select2').select2()
+        })
+    </script>*@
+<div class="form-group">
+    <label>Multiple</label>
+    <select class="form-control select2" multiple="multiple" data-placeholder="Seçiniz"
+            style="width: 100%;">
+        <option>Alabama</option>
+        <option>Alaska</option>
+        <option>California</option>
+        <option>Delaware</option>
+        <option>Tennessee</option>
+        <option>Texas</option>
+        <option>Washington</option>
+    </select>
+</div>

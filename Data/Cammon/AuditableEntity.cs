@@ -22,5 +22,6 @@ namespace ilac_etkilesimleri.Data
         [MaxLength(256)]
         [ScaffoldColumn(false)]
         public string UpdatedBy { get; set; }
+
     }
 }
