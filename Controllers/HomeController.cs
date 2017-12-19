@@ -1,13 +1,12 @@
 ﻿using ilac_etkilesimleri.Data;
 using ilac_etkilesimleri.Models;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Data.Entity;
+using System.Globalization;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using System.Web;
+using System.Web.Helpers;
 using System.Web.Mvc;
 
 namespace ilac_etkilesimleri.Controllers
@@ -17,98 +16,62 @@ namespace ilac_etkilesimleri.Controllers
         TingoonDbContext db = new TingoonDbContext();
         public ActionResult Index()
         {
-            // List<tblDepartment> DeptList = db.tblDepartments.ToList();
-            // ViewBag.ListOfDepartment = new SelectList(DeptList, "DepartmentId", "DepartmentName");
             return View();
         }
-        public ActionResult Index2()
+        public JsonResult GetIlacEtkilesim(string CheckIlaclar)
         {
-            // List<tblDepartment> DeptList = db.tblDepartments.ToList();
-            // ViewBag.ListOfDepartment = new SelectList(DeptList, "DepartmentId", "DepartmentName");
+
+            if (CheckIlaclar == null)
+                return new JsonResult { Data = null, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
+            if (CheckIlaclar.EndsWith(","))
+                CheckIlaclar = CheckIlaclar.Substring(0, CheckIlaclar.Length - 1);
+            if (CheckIlaclar.StartsWith(","))
+                CheckIlaclar = CheckIlaclar.Substring(1, CheckIlaclar.Length);
+            List<int> IlacListId = new List<int>();
+            foreach (var item in CheckIlaclar.Split(','))
+                IlacListId.Add(Convert.ToInt32(item));
+            var temp = db.IlacEtkilesim.Where(x => IlacListId.Contains(x.IlacId1) && IlacListId.Contains(x.IlacId2)).Distinct().Select(x => new { Ad1 = x.Ilac1.Ad, Ad2 = x.Ilac2.Ad, Id1 = x.IlacId1, Id2 = x.IlacId2 }).ToList();
+            return new JsonResult { Data = temp, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
+        }
+        public JsonResult GetIlacSearchValue(string search)
+        {
+            var allsearch = db.Ilac.Where(x => x.Ad.Contains(search)).Select(x => new IlacEtkilesimIndexViewModel { Id = x.Id, Ad = x.Ad, AnalizYapildiMi = x.AnalizYapildiMi }).Take(10).ToList();
+            return new JsonResult { Data = allsearch, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
+        }
+        public ActionResult ChangeCulture(string lang, string returnUrl)
+        {
+            Session["Culture"] = new CultureInfo(lang);
+            return Redirect(returnUrl);
+        }
+        public ActionResult Contact()
+        {
             return View();
         }
 
-        public JsonResult GetEtkenMaddeList()
-        {
-            List<EtkenMaddeViewModel> List = db.EtkenMadde.Select(x => new EtkenMaddeViewModel
-            {
-                Id = x.Id,
-                Ad = x.Ad,
-                Aciklama = x.Aciklama
-            }).ToList();
-
-            return Json(List, JsonRequestBehavior.AllowGet);
-        }
-
-        public JsonResult GetEtkenMaddeById(int Id)
-        {
-            EtkenMadde model = db.EtkenMadde.Where(x => x.Id == Id).SingleOrDefault();
-            string value = string.Empty;
-            value = JsonConvert.SerializeObject(model, Formatting.Indented, new JsonSerializerSettings
-            {
-                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-            });
-            return Json(value, JsonRequestBehavior.AllowGet);
-        }
-
-        public JsonResult SaveDataInDatabase(EtkenMaddeViewModel model)
+        [HttpPost]
+        public ActionResult Contact(string mail, string konu, string ileti)
         {
             try
             {
-                if (!ModelState.IsValid)
-                {
-                    // ViewBag.EtkenMaddeListe = db.EtkenMadde.Select(x => new SelectListItem { Text = x.Ad, Value = x.Id.ToString() }).ToList();
-                    return Json(false, JsonRequestBehavior.AllowGet);
-                }
-                if (model.Id != null && model.Id > 0)
-                {
-                    EtkenMadde m = db.EtkenMadde.SingleOrDefault(x => x.Id == model.Id);
-                    if (m.Ad != model.Ad.ToLower() && db.EtkenMadde.Where(x => x.Ad == model.Ad.ToLower()).Count() > 0)
-                    {
-                        ModelState.AddModelError("Ad", "Bu isimde bir etken madde zaten var.");
-                        return Json(false, JsonRequestBehavior.AllowGet);
-                    }
-                    m.Aciklama = model.Aciklama;
-                    db.SaveChanges();
-                    return Json(true, JsonRequestBehavior.AllowGet);
-                }
+                WebMail.SmtpServer = "smtp.live.com";
+                WebMail.EnableSsl = true;
+                WebMail.UserName = "mvckutuphanemiz@hotmail.com";
+                WebMail.Password = "mvc123456";
+                WebMail.SmtpPort = 587;
+                WebMail.Send(
+                        "mvckutuphanemiz@hotmail.com",
+                        konu,
+                        ileti,
+                        mail
+                    );
 
-                if (db.EtkenMadde.Where(x => x.Ad == model.Ad.ToLower()).Count() > 0)
-                {
-                    ModelState.AddModelError("Ad", "Bu isimde bir etken madde zaten var.");
-                    return Json(false, JsonRequestBehavior.AllowGet);
-                    //ViewBag.EtkenMaddeListe =  db.EtkenMadde.Select(x => new SelectListItem { Text = x.Ad, Value = x.Id.ToString() }).ToList();
-                }
-                else
-                {
-                    EtkenMadde m = new EtkenMadde();
-                    m.Ad = model.Ad;
-                    m.Aciklama = model.Aciklama;
-                    db.EtkenMadde.Add(m);
-                    db.SaveChanges();
-                    return Json(true, JsonRequestBehavior.AllowGet);
-                }
+                return RedirectToAction("Index", "Home");
             }
             catch (Exception ex)
             {
-                return Json(false, JsonRequestBehavior.AllowGet);
-                //   ModelState.AddModelError("Hata", "Bu isimde bir etken madde zaten var.");
+                ViewData.ModelState.AddModelError("_HATA", ex.Message);
             }
-
-        }
-
-        public JsonResult DeleteEtkenMaddeRecord(int Id)
-        {
-            bool result = false;
-            EtkenMadde m = db.EtkenMadde.SingleOrDefault(x => x.Id == Id);
-            if (m != null)
-            {
-                db.EtkenMadde.Remove(m);
-                db.SaveChanges();
-                result = true;
-            }
-
-            return Json(result, JsonRequestBehavior.AllowGet);
+            return View();
         }
     }
 }

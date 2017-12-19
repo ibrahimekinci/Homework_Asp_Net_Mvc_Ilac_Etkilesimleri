@@ -1,0 +1,97 @@
+﻿@model IEnumerable<ilac_etkilesimleri.Models.IlacEtkilesimIndexViewModel>
+
+@{
+    ViewBag.process = "Liste";
+    ViewBag.Title = "İlaç";
+}
+
+@section head{
+    <!-- Select2 -->
+    <link rel="stylesheet" href="~/Assets/bower_components/select2/dist/css/select2.min.css">
+    <!-- DataTables -->
+    <link rel="stylesheet" href="~/Assets/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css">
+
+}
+@section scripts{
+    <!-- DataTables -->
+    <script src="~/Assets/bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
+    <script src="~/Assets/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+
+    <script>
+        $(function () {
+            $('#example1').DataTable()
+            $('#example2').DataTable({
+                'paging': true,
+                'lengthChange': false,
+                'searching': false,
+                'ordering': true,
+                'info': true,
+                'autoWidth': false
+            })
+        })
+    </script>
+}
+<div class="box">
+    <div class="box-header">
+        <h3 class="box-title"><b>@ViewBag.Title Liste</b> </h3>
+    </div>
+</div>
+<div class="box">
+    <!-- /.box-header -->
+    <div class="box-body">
+        <table id="example1" class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    @*Değiştirlecek*@
+                    <th>
+                        @Html.DisplayNameFor(model => model.Id)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Ad)
+                    </th>
+                    <th>İşlemler</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{string satirRengi = ""; }
+                @foreach (var item in Model)
+                {
+                    if (item.AnalizYapildiMi) { satirRengi = ""; }
+                    else { satirRengi = "bg-red"; }
+
+                    <tr class='@satirRengi'>
+                        <td>
+                            @item.Id
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Ad)
+                        </td>
+                        <td>
+                            @if (item.AnalizYapildiMi)
+                            {
+                                <a href='@Url.Action("Details",new { id= item.Id })' class='btn btn-primary'><div class="col-md-3 col-sm-4"><i class="fa fa-fw fa-building-o"></i>Etkileşimleri Görüntüle</div></a>
+                                @*<a href='@Url.Action("Edit",new { id= item.Id })' class='btn btn-warning'><span class="glyphicon glyphicon-edit"></span>Etkileşimleri Düzenle</a>*@
+                                <a href='@Url.Action("AnalizYap",new { id= item.Id })' class='btn btn-danger'>Tekrar Analiz Yap</a>
+                            }
+                            else
+                            {
+                                <a href='@Url.Action("AnalizYap",new { id= item.Id })' class='btn btn-danger'>Analiz Yap</a>
+                            }
+
+
+                        </td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Ad)
+                    </th>
+                    <th>İşlemler</th>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+    <!-- /.box-body -->
+</div>

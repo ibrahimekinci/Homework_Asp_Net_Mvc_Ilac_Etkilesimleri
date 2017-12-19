@@ -6,8 +6,21 @@
 }
 <div class="box">
     <div class="box-header">
-        <h3 class="box-title"><b>Etken Madde' Yi Gerçekten Silmek İstiyor musunuz?</b> </h3>
-        <h3>@Html.DisplayFor(model => model.Ad)</h3>
+        <h3 class="box-title"><b>@ViewBag.Title 'yi GErçekten Silmek İstiyor Musunuz?</b> </h3>
+    </div>
+</div>
+<div class="box">
+    <div class="box-header">
+        <h3 class="box-title"> <b>@Html.DisplayNameFor(model => model.Id)</b></h3>
+        <p>
+            @Model.Id
+        </p>
+    </div>
+    <div class="box-header">
+        <h3 class="box-title"> <b>@Html.DisplayNameFor(model => model.Ad)</b></h3>
+        <p>
+            @Model.Ad
+        </p>
     </div>
     <div class="box-header">
         <h3 class="box-title"> <b>@Html.DisplayNameFor(model => model.Aciklama)</b></h3>
@@ -33,6 +46,8 @@
             @Html.Raw(Model.DikkatEdilecekler)
         </p>
     </div>
+</div>
+<div class="box">
     <div class="box-header">
         <h4 class="box-title Bold"><b>Etkileşimde Bulunduğu Etken Maddeler</b></h4>
     </div>
@@ -71,16 +86,20 @@
     }
 
 </div>
-<p>
-    @using (Html.BeginForm())
-    {
-        @Html.AntiForgeryToken()
+<div class="box">
+    <div class="form-horizontal">
+        @using (Html.BeginForm())
+        {
+            @Html.AntiForgeryToken()
 
-        <div class="form-actions no-color">
-            <input type="submit" value="Delete" class="btn btn-block btn-danger btn-lg" />
-            @Html.ActionLink("Listeye Geri Dön", "Index", null, htmlAttributes: new { @class = "btn btn-block btn-warning btn-lg" })
-
-        </div>
-    }
-</p>
-
+            <div class="form-group">
+                <div class="col-md-6">
+                    <input type="submit" value="Delete" class="btn btn-block btn-danger btn-lg" />
+                </div>
+                <div class="col-md-6">
+                    @Html.ActionLink("Listeye Geri Dön", "Index", null, htmlAttributes: new { @class = "btn btn-block btn-warning btn-lg" })
+                </div>
+            </div>
+        }
+    </div>
+</div>

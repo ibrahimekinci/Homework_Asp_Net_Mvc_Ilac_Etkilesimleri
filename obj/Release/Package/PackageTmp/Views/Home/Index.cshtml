@@ -1,234 +1,169 @@
-﻿@model ilac_etkilesimleri.Models.EtkenMaddeViewModel
+﻿@model IEnumerable<ilac_etkilesimleri.Data.IlacEtkilesim>
 @{
-    ViewBag.Title = "Home Page";
+    ViewBag.process = "İlaç Etkileşimleri";
+    ViewBag.Title = "Anasayfa";
 }
-
-@*@section head{
-
-    }
-    @section scripts{
-
-    }*@
 
 @section head{
+    <style>
+        .state-icon {
+            left: -5px;
+        }
 
-    @*<script src="~/Scripts/jquery-1.10.2.min.js"></script>
-        <script src="~/Scripts/bootstrap.min.js"></script>
-        <link href="~/Content/bootstrap.min.css" rel="stylesheet" />*@
-    <!-- bootstrap wysihtml5 - text editor -->
-    <link rel="stylesheet" href="~/Assets/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css">
+        .list-group-item-primary {
+            color: rgb(255, 255, 255);
+            background-color: rgb(66, 139, 202);
+        }
 
+        /* DEMO ONLY - REMOVES UNWANTED MARGIN */
+        .well .list-group {
+            margin-bottom: 0px;
+        }
+    </style>
 }
 @section scripts{
-    <!-- CK Editor -->
-    @*<script src="~/Assets/bower_components/ckeditor/ckeditor.js"></script>
-            <script>
-                $(function () {
-                    // Replace the <textarea id="editor1"> with a CKEditor
-                    // instance, using default configuration.
-                    CKEDITOR.replace('Aciklama')
-                })
-        </script>*@
-    <!-- Bootstrap WYSIHTML5 -->
-    @* <script src="~/Assets/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.all.min.js"></script>
-        <script>
-            $(function () {
-                //bootstrap WYSIHTML5 - text editor
-                $("#Aciklama").wysihtml5();
-            })
-
-        </script>*@
+    <script src="~/Assets/plugins/iCheck/icheck.min.js"></script>
+    @*arama*@
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    @*<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>*@
+    <script src="~/Assets/bower_components/jquery/dist/jquery-ui.min.js"></script>
     <script>
-        $("#LoadingStatus").html("<div class=\"box-header\"><h3 class=\"box-title\" style=\"text-align:center\">Liste</h3></div>")
-        $.get("/Home/GetEtkenMaddeList", null, DataBind);
-        function DataBind(EtkenMaddeList) {
-            var SetData = $("#SetEtkenMaddeList");
-            for (var i = 0; i < EtkenMaddeList.length; i++) {
-                var Data = "<tr class='row_" + EtkenMaddeList[i].Id + "'>" +
-                    "<td>" + EtkenMaddeList[i].Id + "</td>" +
-                    "<td>" + EtkenMaddeList[i].Ad + "</td>" +
-                    "<td>" + EtkenMaddeList[i].Aciklama + "</td>" +
-                    "<td>" + "<a href='#' class='btn btn-warning' onclick='EditEtkenMaddeRecord(" + EtkenMaddeList[i].Id + ")' ><span class='glyphicon glyphicon-edit'></span></a>" + "</td>" +
-                    "<td>" + "<a href='#' class='btn btn-danger' onclick='DeleteEtkenMaddeRecord(" + EtkenMaddeList[i].Id + ")'><span class='glyphicon glyphicon-trash'></span></a>" + "</td>" +
-                    "</tr>";
-                SetData.append(Data);
-                $("#LoadingStatus").html(" ");
+        $("#searchInput").keyup(function () {
 
-            }
-        }
+            var ddlIlaclar = $("#ddlIlaclar");
+            ddlIlaclar.empty().append('<option selected="selected" value="0" disabled = "disabled">Loading.....</option>');
 
-        //Show The Popup Modal For Add New EtkenMadde
-
-        function AddNewEtkenMadde(Id) {
-            $("#form")[0].reset();
-            $("#Id").val(0);
-
-            //$("#DropDwn option:selected").text("--Select Dept--");
-            $("#ModalTitle").html("Add New EtkenMadde");
-            $("#MyModal").modal();
-
-
-        }
-
-        //Show The Popup Modal For Edit EtkenMadde Record
-
-        function EditEtkenMaddeRecord(Id) {
-            var url = "/Home/GetEtkenMaddeById?Id=" + Id;
-            $("#ModalTitle").html("Update EtkenMadde Record");
-            $("#MyModal").modal();
             $.ajax({
-                type: "GET",
-                url: url,
-                success: function (data) {
-                    var obj = JSON.parse(data);
-                    $("#Id").val(obj.Id);
-                    $("#Ad").val(obj.Ad);
-                    $("#Aciklama").val(obj.Aciklama);
-                    //$("#DropDwn option:selected").text(obj.tblDepartment.DepartmentName);
-                    //$("#DropDwn option:selected").val(obj.DepartmentId);
-
+                url: '@Url.Action("GetIlacSearchValue","Home")',
+                dataType: "json",
+                data: { search: $("#searchInput").val() },
+                success: function (response) {
+                    ddlIlaclar.empty();
+                    //ddlIlaclar.empty().append('<option selected="selected" value="0">Please select</option>');
+                    $.each(response, function () {
+                        ddlIlaclar.append($("<option></option>").val(this['Id']).html(this['Ad']));
+                    });
+                    if (ddlIlaclar.children().length==0) {
+                        ddlIlaclar.empty().append('<option selected="selected" value="0" disabled = "disabled">Sonuç Bulunamadı.....</option>');
+                    }
+                },
+                failure: function (response) {
+                    alert(response.responseText);
+                },
+                error: function (response) {
+                    alert(response.responseText);
                 }
-            })
-        }
+            });
+        });
 
-        $("#SaveEtkenMaddeRecord").click(function () {
-            var data = $("#SubmitForm").serialize();
+        $("#btnListeyeEkle").click(function () {
+            var CheckList = $("#IlaclarList input:checkbox");
+            var varMi = false;
+            var temp;
+            $("#ddlIlaclar option:selected").each(function () {
+                if (CheckList.length == 0) {
+                    $("#IlaclarList").append('<li class="list-group-item"> <input id="CheckIlacList" name="CheckIlacList" type="checkbox" value="' + $(this).val() + '" checked />' + $(this).text() + '</li>');
+                }
+                else {
+                    //alert($(this).text()); alert($(this).val());
+                    temp = $(this).val();
+                    CheckList.each(function () {
+                        if ($(this).val() == temp) { varMi = true; }
+                    });
+                    if (!varMi) {
+                        $("#IlaclarList").append('<li class="list-group-item"> <input id="CheckIlacList" name="CheckIlacList" type="checkbox" value="' + $(this).val() + '" checked />' + $(this).text() + '</li>');
+                    }
+                    varMi = false;
+                }
+            });
+            });
+
+        $("#btnIlacEtkilesim").click(function () {
+            var temp = $("#divIlacEtkilesim");
+            temp.empty();
+            var CheckList = $("#IlaclarList input:checked");
+            if (CheckList.length > 0) {
+            var CheckIlacListId = "";
+            CheckList.each(function () {
+                //Secilenler.push($(this).val());
+                CheckIlacListId += $(this).val() + ",";
+            });
             $.ajax({
-                type: "Post",
-                url: "/Home/SaveDataInDatabase",
-                data: data,
-                success: function (result) {
-                    if (result) {
-                        window.location.href = "/Home/index";
-                        $("#MyModal").modal("hide");
+                url: '@Url.Action("GetIlacEtkilesim", "Home")',
+                dataType: "json",
+                data: { CheckIlaclar: CheckIlacListId},
+                success: function (response) {
+                    if (response.length ==0) {
+                        temp.empty().append('<div class="callout callout-info"><H2 style="background-color:green;">İlaçlar birlikte kullanıma uygundur.....</H3></div>');
                     }
                     else {
-                        alert("işlem başarısız oldu!..");
+                        temp.empty().append('<H2 class="callout callout-danger">Aşağıda Listelenen ilaç çiftleri birlikte kullanıma uygun değildir.....</H2><hr />');
+
+                        $.each(response, function () {
+                            temp.append('<div class="callout callout-danger col-md-12"><h4 class="col-md-12"><b>İLAÇ ADI: </B>' + this['Ad1'] +'</h4><h4 class="col-md-12"><b>İLAÇ ADI: </B>'+this['Ad2']+'</h4></div>');
+                        });
                     }
+                },
+                failure: function (response) {
+                    alert(response.responseText);
+                },
+                error: function (response) {
+                    alert(response.responseText);
                 }
-            })
+            });
+
+            }
+            else {
+                temp.empty().append('<div class="callout callout-danger"><h2>Lütfen sonuçları bulmak için önce ilaç ekleyiniz.....</h2></div>');
+            }
+        });
+
+
+
+        $(function () {
+            $("#searchInput").keyup();
         })
-
-        //Show The Popup Modal For DeleteComfirmation
-        var DeleteEtkenMaddeRecord = function (Id) {
-            $("#Id").val(Id);
-            $("#DeleteConfirmation").modal("show");
-        }
-        var ConfirmDelete = function () {
-            var Id = $("#Id").val();
-            $.ajax({
-                type: "POST",
-                url: "/Home/DeleteEtkenMaddeRecord?Id=" + Id,
-                success: function (result) {
-                    $("#DeleteConfirmation").modal("hide");
-                    $(".row_" + Id).remove();
-                }
-            })
-        }
     </script>
-
 }
 
-<div class="container" style="margin-top:3%">
-    <a href="#" class="btn btn-info" onclick="AddNewEtkenMadde(0)">Add New EtkenMadde</a> <br /><br />
-
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>EtkenMadde ID</th>
-                <th>EtkenMadde Name</th>
-                <th>Aciklama</th>
-                <!-- <th>Department</th> -->
-                <th>Action(Edit)</th>
-                <th>Action(Delete)</th>
-
-            </tr>
-        </thead>
-        <tbody id="SetEtkenMaddeList">
-            <tr id="LoadingStatus" style="color:red"></tr>
-        </tbody>
-    </table>
-
-    @*Create A Popup Modal With Registration Form For Add Or Edit EtkenMadde Record*@
-
-    <div class="modal fade" id="MyModal">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <a href="#" class="close" data-dismiss="modal">&times;</a>
-                    <h4 id="ModalTitle"></h4>
-                </div>
-                <div class="modal-body">
-                    <form id="form">
-                        <fieldset id="SubmitForm">
-                            <div class="box">
-                                <div class="box-header">
-                                    <h3 class="box-title">Oluştur</h3>
-                                </div>
-                                @using (Html.BeginForm())
-                                {
-                                    @*@Html.AntiForgeryToken()*@
-                                    @Html.HiddenFor(m => m.Id, new { @id = "Id" })
-                                    <div class="form-horizontal">
-
-                                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-                                        <div class="form-group">
-                                            @Html.LabelFor(model => model.Ad, htmlAttributes: new { @class = "control-label col-md-2" })
-                                            <div class="col-md-10">
-                                                @Html.EditorFor(model => model.Ad, new { htmlAttributes = new { @class = "form-control", @required = "required" } })
-                                                @Html.ValidationMessageFor(model => model.Ad, "", new { @class = "text-danger" })
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            @Html.LabelFor(model => model.Aciklama, htmlAttributes: new { @class = "control-label col-md-2" })
-                                            <div class="col-md-10">
-                                                @Html.TextAreaFor(model => model.Aciklama, htmlAttributes: new { @class = "textarea form-control", @placeholder = "Etken Madde Detay" })
-
-                                                @*<textarea id="Aciklama" name="Aciklama" class="textarea" placeholder="Place some text here" style="width: 100%; height: 200px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;"></textarea>*@
-                                                @Html.ValidationMessageFor(model => model.Aciklama, "", new { @class = "text-danger" })
-                                            </div>
-                                        </div>
-                                        @*@if (ViewBag.EtkenMaddeListe != null)
-                                            {
-                                                <div class="form-group">
-                                                    @Html.LabelFor(model => model.EtkilesenEtkenMaddeler, htmlAttributes: new { @class = "control-label col-md-2" })
-                                                    <div class="col-md-10">
-                                                        @Html.DropDownListFor(model => model.EtkilesenEtkenMaddelerId, ViewBag.EtkenMaddeListe as IEnumerable<SelectListItem>, htmlAttributes: new { @class = "form-control select2", @multiple = "multiple", @data_placeholder = "Seçiniz", @style = "width: 100%;" })                        @Html.ValidationMessageFor(model => model.EtkilesenEtkenMaddelerId, "", new { @class = "text-danger" })
-                                                    </div>
-                                                </div>
-                                            }*@
-                                        <div class="form-group">
-                                            <div class="col-md-offset-2 col-md-10">
-                                                <a href="#" class="btn btn-block btn-primary btn-lg" id="SaveEtkenMaddeRecord">Kaydet</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                }
-                            </div>
-
-                        </fieldset>
-                    </form>
-                </div>
-            </div>
-        </div>
+<div class="box">
+    <div class="box-header">
+        <h3 class="box-title"><b>@ViewBag.Title İlaç Etkileşim Kontrol</b> </h3>
+    </div>
+</div>
+<div class="box">
+    <div class="box-header">
+        <h3 class="box-title"><b>@ViewBag.Title İlaç Ara</b> </h3>
     </div>
 
-    @*Create A PopUp Modal For DeleteConfirmation*@
+    <input type="text" class="form-control" id="searchInput" name="searchInput" placeholder="İlaç Ara">
+    <select id="ddlIlaclar" class="form-control" multiple></select>
+    <button type="button" id="btnListeyeEkle" name="btnListeyeEkle" class="btn btn-block btn-info">Listeye Ekle</button>
+</div>
 
-    <div class="modal fade" id="DeleteConfirmation">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <a href="#" class="close" data-dismiss="modal">&times;</a>
-                    <h4>Delete EtkenMadde Record</h4>
-                </div>
-                <div class="modal-body">
-                    <h4>Are You Sure? You Want To Delete This Record.</h4>
-                </div>
-                <div class="modal-footer">
-                    <a href="#" class="btn btn-primary" data-dismiss="modal" id="r">Cancle</a>
-                    <a href="#" class="btn btn-danger" onclick="ConfirmDelete()">Confirm</a>
-                </div>
-            </div>
+<div class="box">
+    <div class="box-header">
+        <h3 class="box-title"><b>Ilac Listesi</b> </h3>
+    </div>
+    <div class="well" style="max-height: 300px;overflow: auto; ">
+
+        <ul id="IlaclarList" name="IlaclarList" class="list-group checked-list-box"></ul>
+
+    </div>
+</div>
+<div class="box">
+    <div class="box-header">
+        <h3 class="box-title"><b>Sonuç</b> </h3>
+    </div>
+    <div id="divIlacEtkilesim" name="divIlacEtkilesim">
+    </div>
+</div>
+<div class="box">
+    <div class="form-group">
+        <div class=" col-md-12">
+
+            <input id="btnIlacEtkilesim" name="btnIlacEtkilesim" type="submit" value="Sonuçları Getir" class="btn btn-block btn-primary btn-lg" />
         </div>
     </div>
+</div>
+

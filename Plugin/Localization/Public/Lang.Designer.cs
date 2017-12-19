@@ -448,6 +448,15 @@ namespace ilac_etkilesimleri.Plugin.Localization.LanguageResource {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Etkilesimleri.
+        /// </summary>
+        public static string LabelEtkilesimleri {
+            get {
+                return ResourceManager.GetString("LabelEtkilesimleri", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Extra.
         /// </summary>
         public static string LabelExtra {

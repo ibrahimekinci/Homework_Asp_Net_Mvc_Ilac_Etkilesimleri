@@ -7,14 +7,14 @@ namespace ilac_etkilesimleri.DAL
 {
     public abstract class EFContextSettings : IdentityDbContext<ApplicationUser>
     {
-        //static EFContextSettings()
-        //{
-        //    using (var context = new TingoonDbContext())
-        //    {
-        //         context.Database.Delete();
-        //        context.Database.Create();
-        //    }
-        //}
+        static EFContextSettings()
+        {
+            //using (var context = new TingoonDbContext())
+            //{
+            //    context.Database.Delete();
+            //    context.Database.Create();
+            //}
+        }
         //public EFContextSettings() : base("name=" + DatabaseConnection.Name())
         //{
         //    // Database.SetInitializer(new DropCreateDatabaseAlways<ApplicationDbContext>());
@@ -25,7 +25,7 @@ namespace ilac_etkilesimleri.DAL
         //public EFContextSettings() : base("LocalMssqlConnection", throwIfV1Schema: false)
         public EFContextSettings() : base("AzureMssqlConnection", throwIfV1Schema: false)
         {
-            Database.SetInitializer(new DropCreateDatabaseAlways<TingoonDbContext>());
+            //Database.SetInitializer(new DropCreateDatabaseAlways<TingoonDbContext>());
             Database.SetInitializer(new DropCreateDatabaseIfModelChanges<TingoonDbContext>());
             Database.SetInitializer(new EFDatabaseInitializer());
         }

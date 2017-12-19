@@ -1,0 +1,234 @@
+﻿@model ilac_etkilesimleri.Models.EtkenMaddeViewModel
+@{
+    ViewBag.Title = "Home Page";
+}
+
+@*@section head{
+
+    }
+    @section scripts{
+
+    }*@
+
+@section head{
+
+    @*<script src="~/Scripts/jquery-1.10.2.min.js"></script>
+        <script src="~/Scripts/bootstrap.min.js"></script>
+        <link href="~/Content/bootstrap.min.css" rel="stylesheet" />*@
+    <!-- bootstrap wysihtml5 - text editor -->
+    <link rel="stylesheet" href="~/Assets/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css">
+
+}
+@section scripts{
+    <!-- CK Editor -->
+    @*<script src="~/Assets/bower_components/ckeditor/ckeditor.js"></script>
+            <script>
+                $(function () {
+                    // Replace the <textarea id="editor1"> with a CKEditor
+                    // instance, using default configuration.
+                    CKEDITOR.replace('Aciklama')
+                })
+        </script>*@
+    <!-- Bootstrap WYSIHTML5 -->
+    @* <script src="~/Assets/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.all.min.js"></script>
+        <script>
+            $(function () {
+                //bootstrap WYSIHTML5 - text editor
+                $("#Aciklama").wysihtml5();
+            })
+
+        </script>*@
+    <script>
+        $("#LoadingStatus").html("<div class=\"box-header\"><h3 class=\"box-title\" style=\"text-align:center\">Liste</h3></div>")
+        $.get("/Home/GetEtkenMaddeList", null, DataBind);
+        function DataBind(EtkenMaddeList) {
+            var SetData = $("#SetEtkenMaddeList");
+            for (var i = 0; i < EtkenMaddeList.length; i++) {
+                var Data = "<tr class='row_" + EtkenMaddeList[i].Id + "'>" +
+                    "<td>" + EtkenMaddeList[i].Id + "</td>" +
+                    "<td>" + EtkenMaddeList[i].Ad + "</td>" +
+                    "<td>" + EtkenMaddeList[i].Aciklama + "</td>" +
+                    "<td>" + "<a href='#' class='btn btn-warning' onclick='EditEtkenMaddeRecord(" + EtkenMaddeList[i].Id + ")' ><span class='glyphicon glyphicon-edit'></span></a>" + "</td>" +
+                    "<td>" + "<a href='#' class='btn btn-danger' onclick='DeleteEtkenMaddeRecord(" + EtkenMaddeList[i].Id + ")'><span class='glyphicon glyphicon-trash'></span></a>" + "</td>" +
+                    "</tr>";
+                SetData.append(Data);
+                $("#LoadingStatus").html(" ");
+
+            }
+        }
+
+        //Show The Popup Modal For Add New EtkenMadde
+
+        function AddNewEtkenMadde(Id) {
+            $("#form")[0].reset();
+            $("#Id").val(0);
+
+            //$("#DropDwn option:selected").text("--Select Dept--");
+            $("#ModalTitle").html("Add New EtkenMadde");
+            $("#MyModal").modal();
+
+
+        }
+
+        //Show The Popup Modal For Edit EtkenMadde Record
+
+        function EditEtkenMaddeRecord(Id) {
+            var url = "/Home/GetEtkenMaddeById?Id=" + Id;
+            $("#ModalTitle").html("Update EtkenMadde Record");
+            $("#MyModal").modal();
+            $.ajax({
+                type: "GET",
+                url: url,
+                success: function (data) {
+                    var obj = JSON.parse(data);
+                    $("#Id").val(obj.Id);
+                    $("#Ad").val(obj.Ad);
+                    $("#Aciklama").val(obj.Aciklama);
+                    //$("#DropDwn option:selected").text(obj.tblDepartment.DepartmentName);
+                    //$("#DropDwn option:selected").val(obj.DepartmentId);
+
+                }
+            })
+        }
+
+        $("#SaveEtkenMaddeRecord").click(function () {
+            var data = $("#SubmitForm").serialize();
+            $.ajax({
+                type: "Post",
+                url: "/Home/SaveDataInDatabase",
+                data: data,
+                success: function (result) {
+                    if (result) {
+                        window.location.href = "/Home/index";
+                        $("#MyModal").modal("hide");
+                    }
+                    else {
+                        alert("işlem başarısız oldu!..");
+                    }
+                }
+            })
+        })
+
+        //Show The Popup Modal For DeleteComfirmation
+        var DeleteEtkenMaddeRecord = function (Id) {
+            $("#Id").val(Id);
+            $("#DeleteConfirmation").modal("show");
+        }
+        var ConfirmDelete = function () {
+            var Id = $("#Id").val();
+            $.ajax({
+                type: "POST",
+                url: "/Home/DeleteEtkenMaddeRecord?Id=" + Id,
+                success: function (result) {
+                    $("#DeleteConfirmation").modal("hide");
+                    $(".row_" + Id).remove();
+                }
+            })
+        }
+    </script>
+
+}
+
+<div class="container" style="margin-top:3%">
+    <a href="#" class="btn btn-info" onclick="AddNewEtkenMadde(0)">Add New EtkenMadde</a> <br /><br />
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>EtkenMadde ID</th>
+                <th>EtkenMadde Name</th>
+                <th>Aciklama</th>
+                <!-- <th>Department</th> -->
+                <th>Action(Edit)</th>
+                <th>Action(Delete)</th>
+
+            </tr>
+        </thead>
+        <tbody id="SetEtkenMaddeList">
+            <tr id="LoadingStatus" style="color:red"></tr>
+        </tbody>
+    </table>
+
+    @*Create A Popup Modal With Registration Form For Add Or Edit EtkenMadde Record*@
+
+    <div class="modal fade" id="MyModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <a href="#" class="close" data-dismiss="modal">&times;</a>
+                    <h4 id="ModalTitle"></h4>
+                </div>
+                <div class="modal-body">
+                    <form id="form">
+                        <fieldset id="SubmitForm">
+                            <div class="box">
+                                <div class="box-header">
+                                    <h3 class="box-title">Oluştur</h3>
+                                </div>
+                                @using (Html.BeginForm())
+                                {
+                                    @*@Html.AntiForgeryToken()*@
+                                    @Html.HiddenFor(m => m.Id, new { @id = "Id" })
+                                    <div class="form-horizontal">
+
+                                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                                        <div class="form-group">
+                                            @Html.LabelFor(model => model.Ad, htmlAttributes: new { @class = "control-label col-md-2" })
+                                            <div class="col-md-10">
+                                                @Html.EditorFor(model => model.Ad, new { htmlAttributes = new { @class = "form-control", @required = "required" } })
+                                                @Html.ValidationMessageFor(model => model.Ad, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            @Html.LabelFor(model => model.Aciklama, htmlAttributes: new { @class = "control-label col-md-2" })
+                                            <div class="col-md-10">
+                                                @Html.TextAreaFor(model => model.Aciklama, htmlAttributes: new { @class = "textarea form-control", @placeholder = "Etken Madde Detay" })
+
+                                                @*<textarea id="Aciklama" name="Aciklama" class="textarea" placeholder="Place some text here" style="width: 100%; height: 200px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;"></textarea>*@
+                                                @Html.ValidationMessageFor(model => model.Aciklama, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+                                        @*@if (ViewBag.EtkenMaddeListe != null)
+                                            {
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.EtkilesenEtkenMaddeler, htmlAttributes: new { @class = "control-label col-md-2" })
+                                                    <div class="col-md-10">
+                                                        @Html.DropDownListFor(model => model.EtkilesenEtkenMaddelerId, ViewBag.EtkenMaddeListe as IEnumerable<SelectListItem>, htmlAttributes: new { @class = "form-control select2", @multiple = "multiple", @data_placeholder = "Seçiniz", @style = "width: 100%;" })                        @Html.ValidationMessageFor(model => model.EtkilesenEtkenMaddelerId, "", new { @class = "text-danger" })
+                                                    </div>
+                                                </div>
+                                            }*@
+                                        <div class="form-group">
+                                            <div class="col-md-offset-2 col-md-10">
+                                                <a href="#" class="btn btn-block btn-primary btn-lg" id="SaveEtkenMaddeRecord">Kaydet</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+
+                        </fieldset>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @*Create A PopUp Modal For DeleteConfirmation*@
+
+    <div class="modal fade" id="DeleteConfirmation">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <a href="#" class="close" data-dismiss="modal">&times;</a>
+                    <h4>Delete EtkenMadde Record</h4>
+                </div>
+                <div class="modal-body">
+                    <h4>Are You Sure? You Want To Delete This Record.</h4>
+                </div>
+                <div class="modal-footer">
+                    <a href="#" class="btn btn-primary" data-dismiss="modal" id="r">Cancle</a>
+                    <a href="#" class="btn btn-danger" onclick="ConfirmDelete()">Confirm</a>
+                </div>
+            </div>
+        </div>
+    </div>

@@ -480,4 +480,10 @@
   <data name="Warning_Type" xml:space="preserve">
     <value>{0} alanına hatalı tipde veri girildi!</value>
   </data>
+  <data name="LabelEtkilesimleri" xml:space="preserve">
+    <value>interactions</value>
+  </data>
+  <data name="LabelIlac" xml:space="preserve">
+    <value>drug</value>
+  </data>
 </root>

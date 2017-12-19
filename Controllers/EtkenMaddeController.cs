@@ -13,6 +13,7 @@ using ilac_etkilesimleri.Models;
 
 namespace ilac_etkilesimleri.Controllers
 {
+    [Authorize]
     public class EtkenMaddeController : Controller
     {
         private TingoonDbContext db = new TingoonDbContext();

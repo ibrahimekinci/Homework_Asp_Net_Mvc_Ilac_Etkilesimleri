@@ -1,0 +1,104 @@
+﻿@model ilac_etkilesimleri.Models.IlacViewModel
+
+@{
+    ViewBag.process = "Güncelle";
+    ViewBag.Title = "İlaç Madde";
+}
+@section head{
+    <!-- Select2 -->
+    <link rel="stylesheet" href="~/Assets/bower_components/select2/dist/css/select2.min.css">
+}
+@section scripts{
+    <!-- Select2 -->
+    <script src="~/Assets/bower_components/select2/dist/js/select2.full.min.js"></script>
+    <script>
+        $(function () {
+            //Initialize Select2 Elements
+            $('.select2').select2()
+        })
+    </script>
+    <!-- CK Editor -->
+    <script src="~/Assets/bower_components/ckeditor/ckeditor.js"></script>
+    <script>
+        $(function () {
+            // Replace the <textarea id="editor1"> with a CKEditor
+            // instance, using default configuration.
+            CKEDITOR.replace('Aciklama')
+            CKEDITOR.replace('YanEtkiler')
+            CKEDITOR.replace('NasilKullanilir')
+            CKEDITOR.replace('DikkatEdilecekler')
+        })
+    </script>
+}
+
+<div class="box">
+    <div class="box-header">
+        <h3 class="box-title">Güncelle</h3>
+    </div>
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+
+
+        <div class="form-horizontal">
+
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <div class="form-group">
+                @Html.LabelFor(model => model.Ad, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.Ad, new { htmlAttributes = new { @class = "form-control", @required = "required" } })
+                    @Html.ValidationMessageFor(model => model.Ad, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.Aciklama, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.TextAreaFor(model => model.Aciklama, new { htmlAttributes = new { @class = "form-control", @required = "required", @rows = "10", @cols = "80" } })
+                    @Html.ValidationMessageFor(model => model.Aciklama, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.YanEtkiler, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.TextAreaFor(model => model.YanEtkiler, new { htmlAttributes = new { @class = "form-control", @required = "required", @rows = "10", @cols = "80" } })
+                    @Html.ValidationMessageFor(model => model.YanEtkiler, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.NasilKullanilir, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.TextAreaFor(model => model.NasilKullanilir, new { htmlAttributes = new { @class = "form-control", @required = "required", @rows = "10", @cols = "80" } })
+                    @Html.ValidationMessageFor(model => model.NasilKullanilir, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.DikkatEdilecekler, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.TextAreaFor(model => model.DikkatEdilecekler, new { htmlAttributes = new { @class = "form-control", @required = "required", @rows = "10", @cols = "80" } })
+                    @Html.ValidationMessageFor(model => model.DikkatEdilecekler, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            @if (ViewBag.EtkenMaddeListe != null)
+            {
+                <div class="form-group">
+                    @Html.LabelFor(model => model.EtkenMaddelerId, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.DropDownListFor(model => model.EtkenMaddelerId, ViewBag.EtkenMaddeListe as IEnumerable<SelectListItem>, htmlAttributes: new { @class = "form-control select2", @multiple = "multiple", @data_placeholder = "Seçiniz", @style = "width: 100%;" })
+                        @Html.ValidationMessageFor(model => model.EtkenMaddelerId, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            }
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+
+                    <input type="submit" value="Güncelle" class="btn btn-block btn-primary btn-lg" />
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    @Html.ActionLink("Listeye Geri Dön", "Index", null, htmlAttributes: new { @class = "btn btn-block btn-warning btn-lg" })
+                </div>
+            </div>
+        </div>
+    }
+</div>

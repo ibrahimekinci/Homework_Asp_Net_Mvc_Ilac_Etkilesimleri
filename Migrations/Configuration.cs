@@ -1,5 +1,6 @@
 namespace ilac_etkilesimleri.Migrations
 {
+    using ilac_etkilesimleri.DAL;
     using System;
     using System.Data.Entity;
     using System.Data.Entity.Migrations;
@@ -15,14 +16,11 @@ namespace ilac_etkilesimleri.Migrations
             AutomaticMigrationDataLossAllowed = true;
         }
 
-        protected override void Seed(ilac_etkilesimleri.TingoonDbContext context)
+        protected override void Seed(ilac_etkilesimleri.TingoonDbContext db)
         {
-            //context.Database.Delete();
-            //context.Database.Create();
-            //  This method will be called after migrating to the latest version.
-
-            //  You can use the DbSet<T>.AddOrUpdate() helper extension method 
-            //  to avoid creating duplicate seed data.
+            var appSeed = new AppSeed(db);
+            //db.Database.Delete();
+            //db.Database.Create();
         }
     }
 }

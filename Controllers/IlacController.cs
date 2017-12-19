@@ -11,6 +11,7 @@ using System.Web.Mvc;
 
 namespace ilac_etkilesimleri.Controllers
 {
+    [Authorize]
     public class IlacController : Controller
     {
         private TingoonDbContext db = new TingoonDbContext();

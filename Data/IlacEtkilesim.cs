@@ -12,10 +12,10 @@ namespace ilac_etkilesimleri.Data
     [System.ComponentModel.DataAnnotations.Schema.Table("IlacEtkilesim")]
     public class IlacEtkilesim : Entity<int>
     {
-        [Display(ResourceType = typeof(Lang), Name = "LabelIIac"), CustomRequired]
+        [Display(ResourceType = typeof(Lang), Name = "LabelIlac"), CustomRequired]
         public int IlacId1 { get; set; }
-        [Display(ResourceType = typeof(Lang), Name = "LabelIIac"), CustomRequired]
-        public int? IlacId2 { get; set; }
+        [Display(ResourceType = typeof(Lang), Name = "LabelIlac"), CustomRequired]
+        public int IlacId2 { get; set; }
         [Display(ResourceType = typeof(Lang), Name = "LabelDetail")]
         public string Aciklama { get; set; }
         [ForeignKey("IlacId1")]

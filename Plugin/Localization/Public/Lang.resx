@@ -540,4 +540,7 @@
   <data name="LabelIlac" xml:space="preserve">
     <value>ilaç</value>
   </data>
+  <data name="LabelEtkilesimleri" xml:space="preserve">
+    <value>Etkilesimleri</value>
+  </data>
 </root>

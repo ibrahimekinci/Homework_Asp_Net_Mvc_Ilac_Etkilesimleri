@@ -1,0 +1,212 @@
+﻿@model ilac_etkilesimleri.Models.IlacEtkilesimViewModel
+
+@{
+    ViewBag.process = Model.Ilac.Ad;
+    ViewBag.Title = "İlaç Etkilesim";
+}
+<div class="box">
+    <div class="box-header">
+        <h3 class="box-title"><b>@ViewBag.Title Detayları</b> </h3>
+    </div>
+</div>
+<div class="box">
+    <div class="box-header">
+        <h3 class="box-title"> <b>@Html.DisplayNameFor(model => model.Ilac.Id)</b></h3>
+        <p>
+            @Model.Ilac.Id
+        </p>
+    </div>
+    <div class="box-header">
+        <h3 class="box-title"> <b>@Html.DisplayNameFor(model => model.Ilac.Ad)</b></h3>
+        <p>
+            @Model.Ilac.Ad
+        </p>
+    </div>
+    <div class="box-header">
+        <h3 class="box-title"> <b>@Html.DisplayNameFor(model => model.Ilac.Aciklama)</b></h3>
+        <p>
+            @Html.Raw(Model.Ilac.Aciklama)
+        </p>
+    </div>
+    <div class="box-header">
+        <h3 class="box-title"> <b>@Html.DisplayNameFor(model => model.Ilac.YanEtkiler)</b></h3>
+        <p>
+            @Html.Raw(Model.Ilac.YanEtkiler)
+        </p>
+    </div>
+    <div class="box-header">
+        <h3 class="box-title"> <b>@Html.DisplayNameFor(model => model.Ilac.NasilKullanilir)</b></h3>
+        <p>
+            @Html.Raw(Model.Ilac.NasilKullanilir)
+        </p>
+    </div>
+    <div class="box-header">
+        <h3 class="box-title"> <b>@Html.DisplayNameFor(model => model.Ilac.DikkatEdilecekler)</b></h3>
+        <p>
+            @Html.Raw(Model.Ilac.DikkatEdilecekler)
+        </p>
+    </div>
+</div>
+<div class="box">
+    <div class="box-header">
+        <h4 class="box-title Bold"><b>Etkileşimde Bulunduğu Etken Maddeler</b></h4>
+    </div>
+    @if (Model.Ilac.EtkenMaddeler != null && Model.Ilac.EtkenMaddeler.Count > 0)
+    {
+
+        foreach (var item in Model.Ilac.EtkenMaddeler)
+        {
+            <div class="box box-default collapsed-box">
+                <div class="box-header with-border">
+                    <h3 class="box-title">@item.Ad</h3>
+
+                    <div class="box-tools pull-right">
+                        <a class="btn btn-box-tool" href="@Url.Action("Details","EtkenMadde", new { id = item.Id })">
+                            <i class="fa fa-external-link-square"></i>
+                        </a>
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                            <i class="fa fa-plus"></i>
+                        </button>
+
+                    </div>
+                    <!-- /.box-tools -->
+                </div>
+                <!-- /.box-header -->
+                <div class="box-body">
+                    @Html.Raw(item.Aciklama)
+                </div>
+                <!-- /.box-body -->
+            </div>
+        }
+
+    }
+    else
+    {
+        <span>Etkilesen madde eklenmemiştir.</span>
+    }
+
+</div>
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    <div class="box">
+        <div class="box-header">
+            <h4 class="box-title Bold"><b>Etkileşimde Bulunabileceği İlaçlar</b></h4>
+        </div>
+        @if (Model.EtkilesilenIlaclar != null && Model.EtkilesilenIlaclar.Count > 0)
+        {
+
+            foreach (var item in Model.EtkilesilenIlaclar)
+            {
+
+                <div class="box box-default collapsed-box">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">
+                            @*    @Html.CheckBox(@item.Id.ToString(), true)*@
+
+                            @*@Html.CheckBox("CheckBoxEtkilesilenler", true, htmlAttributes: new { @value = item.Id })*@
+                            <input id="CheckBoxEtkilesilenler" name="CheckBoxEtkilesilenler" type="checkbox" value="@item.Id" />
+                            @item.Ad
+                        </h3>
+
+                        <div class="box-tools pull-right">
+
+
+                            <a class="btn btn-box-tool" href="@Url.Action("Details", "Ilac", new { id = item.Id })">
+                                <i class="fa fa-external-link-square"></i>
+                            </a>
+                            <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                                <i class="fa fa-plus"></i>
+                            </button>
+
+                        </div>
+                        <!-- /.box-tools -->
+                    </div>
+                    <!-- /.box-header -->
+                    <div class="box-body">
+                        <div class="box">
+                            <div class="box-header">
+                                <h3 class="box-title"> <b>@Html.DisplayNameFor(model => model.Ilac.Aciklama)</b></h3>
+                                <p>
+                                    @Html.Raw(Model.Ilac.Aciklama)
+                                </p>
+                            </div>
+                            <div class="box-header">
+                                <h3 class="box-title"> <b>@Html.DisplayNameFor(model => model.Ilac.YanEtkiler)</b></h3>
+                                <p>
+                                    @Html.Raw(Model.Ilac.YanEtkiler)
+                                </p>
+                            </div>
+                            <div class="box-header">
+                                <h3 class="box-title"> <b>@Html.DisplayNameFor(model => model.Ilac.NasilKullanilir)</b></h3>
+                                <p>
+                                    @Html.Raw(Model.Ilac.NasilKullanilir)
+                                </p>
+                            </div>
+                            <div class="box-header">
+                                <h3 class="box-title"> <b>@Html.DisplayNameFor(model => model.Ilac.DikkatEdilecekler)</b></h3>
+                                <p>
+                                    @Html.Raw(Model.Ilac.DikkatEdilecekler)
+                                </p>
+                            </div>
+                            <div class="box-header">
+                                <h4 class="box-title Bold"><b>Etkileşimde Bulunduğu Etken Maddeler</b></h4>
+                            </div>
+                            @if (item.EtkenMaddeler != null && item.EtkenMaddeler.Count > 0)
+                            {
+
+                                foreach (var itemEtkenMadde in item.EtkenMaddeler)
+                                {
+                                    <div class="box box-default collapsed-box">
+                                        <div class="box-header with-border">
+                                            <h3 class="box-title">@itemEtkenMadde.Ad</h3>
+
+                                            <div class="box-tools pull-right">
+                                                <a class="btn btn-box-tool" href="@Url.Action("Details", "EtkenMadde", new { id = itemEtkenMadde.Id })">
+                                                    <i class="fa fa-external-link-square"></i>
+                                                </a>
+                                                <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                                                    <i class="fa fa-plus"></i>
+                                                </button>
+
+                                            </div>
+                                            <!-- /.box-tools -->
+                                        </div>
+                                        <!-- /.box-header -->
+                                        <div class="box-body">
+                                            @Html.Raw(itemEtkenMadde.Aciklama)
+                                        </div>
+                                        <!-- /.box-body -->
+                                    </div>
+                                }
+
+                            }
+                            else
+                            {
+                                <span>Etkilesen madde eklenmemiştir.</span>
+                            }
+
+                        </div>
+                    </div>
+                    <!-- /.box-body -->
+                </div>
+            }
+
+        }
+        else
+        {
+            <span>Etken Madde baz alınırak etkileşimde bulanabilecek bir ilaç eklenmemiştir.</span>
+        }
+    </div>
+    <div class="box">
+        <div class="form-group">
+            <div class=" col-md-6">
+
+                <input type="submit" value="Kaydet" class="btn btn-block btn-primary btn-lg" />
+            </div>
+            <div class=" col-md-6">
+                @Html.ActionLink("Listeye Geri Dön", "Index", null, htmlAttributes: new { @class = "btn btn-block btn-warning btn-lg" })
+            </div>
+        </div>
+    </div>
+}

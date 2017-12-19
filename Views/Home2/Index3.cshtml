@@ -1,0 +1,13 @@
+﻿@model IEnumerable<ilac_etkilesimleri.Models.IlacEtkilesimIndexViewModel>
+@{
+    ViewBag.Title = "Index3";
+}
+
+<h2>Index3</h2>
+@foreach (var item in Model)
+{
+    @Html.CheckBoxFor(m => item.AnalizYapildiMi,"aa")
+    @Html.HiddenFor(m => item.Ad)
+    @Html.HiddenFor(m => item.Id)
+    <span>@item.Ad</span>
+}

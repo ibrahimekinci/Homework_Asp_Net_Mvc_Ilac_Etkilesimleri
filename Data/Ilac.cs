@@ -22,7 +22,7 @@ namespace ilac_etkilesimleri.Data
         public string YanEtkiler { get; set; }
         public string NasilKullanilir { get; set; }
         public string DikkatEdilecekler { get; set; }
-        public Nullable<bool> AnalizYapildiMi { get; set; }
+        public bool AnalizYapildiMi { get; set; }
         public ICollection<IlacEtkenMadde> IlacEtkenMadde { get; set; }
     }
 }
